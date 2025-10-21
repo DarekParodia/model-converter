@@ -14,12 +14,6 @@ set(SrcDIR ${CMAKE_SOURCE_DIR}/src)
 set(IncludeDIR ${CMAKE_SOURCE_DIR}/include)
 set(CMakeDIR ${CMAKE_SOURCE_DIR}/cmake)
 
-include("${CMakeDIR}/deployment.cmake")
-include("${CMakeDIR}/dependecies.cmake")
-include("${CMakeDIR}/shaders.cmake")
-
-configure_file(${SrcDIR}/config.h.in config.h)
-
 include_directories(
         ${SrcDIR}
         ${IncludeDIR}
@@ -27,4 +21,15 @@ include_directories(
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+# cxxopts
+add_subdirectory(${IncludeDIR}/cxxopts)
+include_directories(${cxxopts_INCLUDE_DIRS})
+
+# spdlog
+add_subdirectory(${IncludeDIR}/spdlog)
+include_directories(${spdlog_INCLUDE_DIRS})
+
 add_executable(converter src/main.cpp)
+
+target_link_libraries(converter PRIVATE cxxopts)
+target_link_libraries(converter PRIVATE spdlog)
