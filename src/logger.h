@@ -3,16 +3,19 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-inline auto logger = spdlog::stdout_color_mt("console");
+// Create logger inline, but configure it immediately
+inline auto logger = []() {
+    auto log = spdlog::stdout_color_mt("console");
 
-/**
- * @brief Sets logger log level etc.
- * calling this function isn't required for using logger
- */
-inline void init_logger() {
-#if defined(PRODUCTION) // set log level
-    logger->set_level(spdlog::level::off);
+#if defined(PRODUCTION)
+    log->set_level(spdlog::level::off);
 #else
-    logger->set_level(spdlog::level::trace);
+    log->set_level(spdlog::level::trace); // logger level
 #endif
-}
+
+    // Also ensure sinks allow all levels
+    for(auto &sink : log->sinks())
+        sink->set_level(spdlog::level::trace);
+
+    return log;
+}();

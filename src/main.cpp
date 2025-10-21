@@ -10,6 +10,7 @@
 bool              encode   = true; // decode if false
 std::string       filepath = "";
 std::vector<char> file_conents;
+Encoder           encoder;
 
 
 int               parseArguments(int argc, char *argv[]) {
@@ -44,6 +45,7 @@ int               parseArguments(int argc, char *argv[]) {
 }
 
 int readFile() {
+    logger->info("Reading file contents from path: " + filepath);
     std::ifstream file(filepath);
     if(!file) {
         logger->error("Failed to open file");
@@ -53,11 +55,11 @@ int readFile() {
     file.seekg(0, std::ios::end);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
+    logger->info("File size: " + std::to_string(size) + " bytes");
 
-    file_conents.clear();
-    file_conents.resize(size);
-    if(file.read(file_conents.data(), size))
-        logger->info("Read " + std::to_string(size) + " bytes");
+    // file_conents.clear();
+    // file_conents.resize(size);
+    // if(file.read(file_conents.data(), size))
 
     return 0;
 }
@@ -71,6 +73,13 @@ int main(int argc, char *argv[]) {
 
     status = readFile();
     if(status != 0) return status;
+
+    std::ifstream file(filepath);
+    try {
+        encoder.encode(file);
+    } catch(const std::exception &e) {
+        logger->error("Error encoding: " + std::string(e.what()));
+    }
 
     return 0;
 }
