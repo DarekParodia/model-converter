@@ -81,5 +81,16 @@ int main(int argc, char *argv[]) {
         logger->error("Error encoding: " + std::string(e.what()));
     }
 
+    logger->info("Serializing");
+    try {
+        auto output = model.getModel()->serialize();
+        logger->debug("output size: " + std::to_string(output.size()));
+        std::ofstream outFile("output.bin"); // open file for writing
+        outFile.write(output.data(), output.size());
+        outFile.close();
+    } catch(const std::exception &e) {
+        logger->error("Error Serializing: " + std::string(e.what()));
+    }
+    logger->info("Done");
     return 0;
 }

@@ -47,16 +47,12 @@ types::model *Model::parseJsonStatic(std::ifstream &file) {
     return model;
 }
 
-std::vector<char> Model::serializeStatic(types::model *model) {
-    if(model == nullptr) throw std::runtime_error("model cannot be null");
-    std::vector<char> output;
-    return output;
-}
 
 void Model::parseJson(std::ifstream &file) {
     if(this->model != nullptr) delete this->model;
     this->model = Model::parseJsonStatic(file);
 };
-std::vector<char> Model::serialize() {
-    return Model::serializeStatic(this->model);
-};
+
+types::model *Model::getModel() {
+    return this->model;
+}

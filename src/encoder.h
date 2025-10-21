@@ -15,11 +15,11 @@ class Model {
     public:
         Model();
         ~Model();
-        static types::model     *parseJsonStatic(std::ifstream &file);
-        static std::vector<char> serializeStatic(types::model *model);
+        static types::model *parseJsonStatic(std::ifstream &file);
 
-        void                     parseJson(std::ifstream &file);
-        std::vector<char>        serialize();
+        void                 parseJson(std::ifstream &file);
+
+        types::model        *getModel();
 
     private:
         types::model *model = nullptr;
