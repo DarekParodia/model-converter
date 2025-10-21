@@ -20,6 +20,6 @@ namespace types {
 
     typedef struct model {
             unsigned int layer_count;
-            layer       *laysers;
+            layer       *layers;
     } model;
 } // namespace types

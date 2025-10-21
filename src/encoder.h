@@ -11,13 +11,16 @@
 #include "types.h"
 
 // to zaenkoduje to gowno iwgl
-class Encoder {
+class Model {
     public:
-        Encoder();
-        ~Encoder();
-        void encode(std::ifstream &file);
+        Model();
+        ~Model();
+        static types::model     *parseJsonStatic(std::ifstream &file);
+        static std::vector<char> serializeStatic(types::model *model);
+
+        void                     parseJson(std::ifstream &file);
+        std::vector<char>        serialize();
 
     private:
-        types::model   model;
-        nlohmann::json json_data;
+        types::model *model = nullptr;
 };

@@ -10,7 +10,7 @@
 bool              encode   = true; // decode if false
 std::string       filepath = "";
 std::vector<char> file_conents;
-Encoder           encoder;
+Model             model;
 
 
 int               parseArguments(int argc, char *argv[]) {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
     std::ifstream file(filepath);
     try {
-        encoder.encode(file);
+        model.parseJson(file);
     } catch(const std::exception &e) {
         logger->error("Error encoding: " + std::string(e.what()));
     }
