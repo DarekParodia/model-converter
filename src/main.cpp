@@ -1,13 +1,18 @@
 #include <cxxopts.hpp>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <filesystem>
 
 #include "logger.h"
+#include "encoder.h"
 
-std::string filepath;
+bool              encode   = true; // decode if false
+std::string       filepath = "";
+std::vector<char> file_conents;
 
-int         main(int argc, char *argv[]) {
-    // argument handling
+
+int               parseArguments(int argc, char *argv[]) {
     try {
         cxxopts::Options options("converter", "AI model converter tool");
 
@@ -17,7 +22,7 @@ int         main(int argc, char *argv[]) {
 
         if(result.count("help")) {
             std::cout << options.help() << "\n";
-            return 0;
+            exit(0);
         }
 
         if(!result.count("input")) {
@@ -35,6 +40,37 @@ int         main(int argc, char *argv[]) {
         std::cerr << "Unexpected error: " << e.what() << "\n";
         return 1;
     }
+    return 0;
+}
+
+int readFile() {
+    std::ifstream file(filepath);
+    if(!file) {
+        logger->error("Failed to open file");
+        return 1;
+    }
+
+    file.seekg(0, std::ios::end);
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    file_conents.clear();
+    file_conents.resize(size);
+    if(file.read(file_conents.data(), size))
+        logger->info("Read " + std::to_string(size) + " bytes");
+
+    return 0;
+}
+
+//
+int main(int argc, char *argv[]) {
+    int status = 0;
+
+    status     = parseArguments(argc, argv);
+    if(status != 0) return status;
+
+    status = readFile();
+    if(status != 0) return status;
 
     return 0;
 }

@@ -29,7 +29,12 @@ include_directories(${cxxopts_INCLUDE_DIRS})
 add_subdirectory(${IncludeDIR}/spdlog)
 include_directories(${spdlog_INCLUDE_DIRS})
 
-add_executable(converter src/main.cpp)
+# json
+add_subdirectory(${IncludeDIR}/nlohmann_json)
+include_directories(${nlohmann_json_INCLUDE_DIRS})
+
+add_executable(converter src/main.cpp src/encoder.cpp)
 
 target_link_libraries(converter PRIVATE cxxopts)
 target_link_libraries(converter PRIVATE spdlog)
+target_link_libraries(converter PRIVATE nlohmann_json)
