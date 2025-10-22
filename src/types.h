@@ -25,55 +25,107 @@ namespace types {
         vec.insert(vec.end(), ptr, ptr + size);
     }
 
-    typedef struct float_array {
-            unsigned int      size; // its count not size
-            float            *array;
+    enum class ModelType : uint8_t {
+        FLOAT32   = 1,
+        FLOAT64   = 2,
+        INT8      = 3,
+        INT16     = 4,
+        INT32     = 5,
+        UNDEFINED = 255
+    };
 
-            std::vector<char> serialize() {
+    template <typename U>
+    static constexpr ModelType getTypeTag() {
+        return ModelType::UNDEFINED;
+    };
+
+    template <typename T>
+    struct array_1d {
+            unsigned int      size; // it's count, not bytes
+            T                *array;
+
+            std::vector<char> serialize() const {
                 std::vector<char> output;
                 append(output, size);
-                append(output, array, size * sizeof(float));
+                if(size > 0 && array != nullptr)
+                    append(output, array, static_cast<size_t>(size) * sizeof(T));
                 return output;
             }
-    } float_array;
+    };
 
-    typedef struct float_array_2d {
+    template <typename T>
+    struct array_2d {
             unsigned int      size;
-            float_array      *array;
+            array_1d<T>      *array;
 
-            std::vector<char> serialize() {
+            std::vector<char> serialize() const {
                 std::vector<char> output;
                 append(output, size);
-                for(int i = 0; i < size; i++)
-                    append(output, array[i].serialize());
+                for(size_t i = 0; i < static_cast<size_t>(size); ++i)
+                    if(array != nullptr)
+                        append(output, array[i].serialize());
 
                 return output;
             }
-    } float_array_2d;
+    };
 
-    typedef struct layer {
-            float_array_2d    weights;
-            float_array       biases;
+    template <typename T>
+    struct layer {
+            array_2d<T>       weights;
+            array_1d<T>       biases;
 
-            std::vector<char> serialize() {
+            std::vector<char> serialize() const {
                 std::vector<char> output;
                 append(output, weights.serialize());
                 append(output, biases.serialize());
                 return output;
             }
-    } layer;
+    };
 
-    typedef struct model {
+    template <typename T>
+    struct model {
             unsigned int      layer_count;
-            layer            *layers;
+            layer<T>         *layers;
 
-            std::vector<char> serialize() {
+            std::vector<char> serialize() const {
                 std::vector<char> output;
+
+                // save the data type tag
+                ModelType typeTag = getTypeTag<T>();
+                append(output, typeTag);
+
                 append(output, layer_count);
-                for(int i = 0; i < layer_count; i++)
-                    append(output, layers[i].serialize());
+                for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)
+                    if(layers != nullptr)
+                        append(output, layers[i].serialize());
 
                 return output;
             }
-    } model;
+    };
+
+    template <>
+    constexpr ModelType getTypeTag<float>() {
+        return ModelType::FLOAT32;
+    }
+
+    template <>
+    constexpr ModelType getTypeTag<double>() {
+        return ModelType::FLOAT64;
+    }
+
+    template <>
+    constexpr ModelType getTypeTag<int8_t>() {
+        return ModelType::INT8;
+    }
+
+    template <>
+    constexpr ModelType getTypeTag<int16_t>() {
+        return ModelType::INT16;
+    }
+
+    template <>
+    constexpr ModelType getTypeTag<int32_t>() {
+        return ModelType::INT32;
+    }
+
 } // namespace types

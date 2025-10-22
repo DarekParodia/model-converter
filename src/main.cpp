@@ -7,13 +7,12 @@
 #include "logger.h"
 #include "encoder.h"
 
-bool              encode   = true; // decode if false
-std::string       filepath = "";
-std::vector<char> file_conents;
-Model             model;
+bool        encode   = true; // decode if false
+std::string filepath = "";
+Model<char> model;
 
 
-int               parseArguments(int argc, char *argv[]) {
+int         parseArguments(int argc, char *argv[]) {
     try {
         cxxopts::Options options("converter", "AI model converter tool");
 
@@ -56,10 +55,6 @@ int readFile() {
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
     logger->info("File size: " + std::to_string(size) + " bytes");
-
-    // file_conents.clear();
-    // file_conents.resize(size);
-    // if(file.read(file_conents.data(), size))
 
     return 0;
 }

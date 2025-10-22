@@ -11,16 +11,19 @@
 #include "types.h"
 
 // to zaenkoduje to gowno iwgl
+template <typename T>
 class Model {
     public:
         Model();
         ~Model();
-        static types::model *parseJsonStatic(std::ifstream &file);
 
-        void                 parseJson(std::ifstream &file);
+        static types::model<T> *parseJsonStatic(std::ifstream &file);
 
-        types::model        *getModel();
+        void                    parseJson(std::ifstream &file);
+
+        types::model<T>        *getModel();
 
     private:
-        types::model *model = nullptr;
+        types::model<T> *model = nullptr;
+        static T         getValueFromJson(const nlohmann::json &j);
 };
