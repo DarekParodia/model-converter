@@ -60,6 +60,10 @@ namespace types {
                     file.read((char *) &array, sizeof(T) * size);
                 }
             }
+
+            void free() {
+                if(array) delete array;
+            }
     };
 
     template <typename T>
@@ -85,6 +89,13 @@ namespace types {
                         array[i].deserialize();
                 }
             }
+
+            void free() {
+                if(size > 0)
+                    for(size_t i = 0; i < static_cast<size_t>(size); ++i)
+                        array[i].free();
+                if(array) delete array;
+            }
     };
 
     template <typename T>
@@ -102,6 +113,11 @@ namespace types {
             void deserialize(std::ifstream &file) {
                 weights.deserialize(file);
                 biases.deserialize(file);
+            }
+
+            void free() {
+                weights.free();
+                biases.free();
             }
     };
 
@@ -136,6 +152,14 @@ namespace types {
                     for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)
                         layers[i].deserialize(file);
                 }
+            }
+
+            void free() {
+                if(layer_count > 0)
+                    for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)
+                        layers[i].free();
+
+                if(layers) delete layers;
             }
     };
 
