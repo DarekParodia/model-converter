@@ -3,6 +3,7 @@
 #include <vector>
 #include <type_traits>
 #include <cstddef>
+#include <memory>
 
 namespace types {
 
@@ -51,6 +52,14 @@ namespace types {
                     append(output, array, static_cast<size_t>(size) * sizeof(T));
                 return output;
             }
+
+            void deserialize(std::ifstream &file) {
+                file.read((char *) &size, sizeof(size));
+                if(size > 0) {
+                    array = new T[size];
+                    file.read((char *) &array, sizeof(T) * size);
+                }
+            }
     };
 
     template <typename T>
@@ -67,6 +76,15 @@ namespace types {
 
                 return output;
             }
+
+            void deserialize(std::ifstream &file) {
+                file.read((char *) &size, sizeof(size));
+                if(size > 0) {
+                    array = new array_1d<T>[size];
+                    for(size_t i = 0; i < static_cast<size_t>(size); ++i)
+                        array[i].deserialize();
+                }
+            }
     };
 
     template <typename T>
@@ -79,6 +97,11 @@ namespace types {
                 append(output, weights.serialize());
                 append(output, biases.serialize());
                 return output;
+            }
+
+            void deserialize(std::ifstream &file) {
+                weights.deserialize(file);
+                biases.deserialize(file);
             }
     };
 
@@ -100,6 +123,19 @@ namespace types {
                         append(output, layers[i].serialize());
 
                 return output;
+            }
+
+            void deserialize(std::ifstream &file) {
+                // check if file is readable
+                if(!file)
+                    throw std::ios_base::failure("Failed to open file");
+
+                file.read((char *) &layer_count, sizeof(unsigned int)); // read layer_count
+                if(layer_count > 0) {
+                    layers = new layer<T>[layer_count]; // create layers
+                    for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)
+                        layers[i].deserialize(file);
+                }
             }
     };
 
@@ -126,6 +162,18 @@ namespace types {
     template <>
     constexpr ModelType getTypeTag<int32_t>() {
         return ModelType::INT32;
+    }
+
+    inline ModelType getModelDataType(std::ifstream &file) {
+        // check if file is readable
+        if(!file)
+            throw std::ios_base::failure("Failed to open file");
+
+        // read type
+        ModelType type;
+
+        file.read((char *) &type, 1);
+        return type;
     }
 
 } // namespace types
