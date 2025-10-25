@@ -54,10 +54,10 @@ namespace types {
             }
 
             void deserialize(std::ifstream &file) {
-                file.read((char *) &size, sizeof(size));
+                file.read(reinterpret_cast<char *>(&size), sizeof(size));
                 if(size > 0) {
                     array = new T[size];
-                    file.read((char *) &array, sizeof(T) * size);
+                    file.read(reinterpret_cast<char *>(array), static_cast<size_t>(size) * sizeof(T));
                 }
             }
 
@@ -86,7 +86,7 @@ namespace types {
                 if(size > 0) {
                     array = new array_1d<T>[size];
                     for(size_t i = 0; i < static_cast<size_t>(size); ++i)
-                        array[i].deserialize();
+                        array[i].deserialize(file);
                 }
             }
 
@@ -146,7 +146,8 @@ namespace types {
                 if(!file)
                     throw std::ios_base::failure("Failed to open file");
 
-                file.read((char *) &layer_count, sizeof(unsigned int)); // read layer_count
+                file.seekg(1, std::ios::cur);                                            // skip type tag
+                file.read(reinterpret_cast<char *>(&layer_count), sizeof(unsigned int)); // read layer_count
                 if(layer_count > 0) {
                     layers = new layer<T>[layer_count]; // create layers
                     for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)

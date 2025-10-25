@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
-            "args": ["-i", "model0.json"],
+            "args": ["-i", "test.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

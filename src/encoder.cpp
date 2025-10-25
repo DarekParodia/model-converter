@@ -70,6 +70,11 @@ char Model<char>::getValueFromJson(const nlohmann::json &j) {
     return j.get<float>() * 100; // scale to int8
 }
 
+template <>
+int8_t Model<int8_t>::getValueFromJson(const nlohmann::json &j) {
+    return (int8_t) (j.get<float>() * 100.0f); // scale to int8
+}
+
 // Explicit instantiation for float to ensure symbols are emitted
 template class Model<float>;
 template class Model<double>;
