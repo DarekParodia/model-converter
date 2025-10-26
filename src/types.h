@@ -3,7 +3,9 @@
 #include <vector>
 #include <type_traits>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <fstream>
 
 namespace types {
 
