@@ -5,11 +5,11 @@
 #include <cstddef>
 #include <memory>
 
-namespace types {
-
+namespace AI {
+    // helper functions
     // Append a single POD value to a vector<char>
     template <typename T>
-    void append(std::vector<char> &vec, const T &value) {
+    inline void append(std::vector<char> &vec, const T &value) {
         static_assert(std::is_trivial<T>::value, "T must be a POD type");
         const char *ptr = reinterpret_cast<const char *>(&value);
         vec.insert(vec.end(), ptr, ptr + sizeof(T));
@@ -99,7 +99,7 @@ namespace types {
     };
 
     template <typename T>
-    struct layer {
+    struct layer_t {
             array_2d<T>       weights;
             array_1d<T>       biases;
 
@@ -122,9 +122,9 @@ namespace types {
     };
 
     template <typename T>
-    struct model {
+    struct model_data_t {
             unsigned int      layer_count;
-            layer<T>         *layers;
+            layer_t<T>       *layers;
 
             std::vector<char> serialize() const {
                 std::vector<char> output;
@@ -149,7 +149,7 @@ namespace types {
                 file.seekg(1, std::ios::cur);                                            // skip type tag
                 file.read(reinterpret_cast<char *>(&layer_count), sizeof(unsigned int)); // read layer_count
                 if(layer_count > 0) {
-                    layers = new layer<T>[layer_count]; // create layers
+                    layers = new layer_t<T>[layer_count]; // create layers
                     for(size_t i = 0; i < static_cast<size_t>(layer_count); ++i)
                         layers[i].deserialize(file);
                 }
@@ -201,4 +201,4 @@ namespace types {
         return type;
     }
 
-} // namespace types
+} // namespace AI

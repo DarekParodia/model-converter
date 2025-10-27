@@ -17,13 +17,13 @@ class Model {
         Model();
         ~Model();
 
-        static types::model<T> *parseJsonStatic(std::ifstream &file);
+        static AI::model_data_t<T> *parseJsonStatic(std::ifstream &file);
 
-        void                    parseJson(std::ifstream &file);
+        void                        parseJson(std::ifstream &file);
 
-        types::model<T>        *getModel();
+        AI::model_data_t<T>        *getModel();
 
     private:
-        types::model<T> *model = nullptr;
-        static T         getValueFromJson(const nlohmann::json &j);
+        AI::model_data_t<T> *model = nullptr;
+        static T             getValueFromJson(const nlohmann::json &j);
 };

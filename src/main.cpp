@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
     long                                  serialization_mem  = getMemoryUsageKB();
 
     logger->info("Deserializing");
-    types::model<int8_t> model2;
+    AI::model_data_t<int8_t> model2;
     try {
         std::ifstream inFile("output.bin");
         model2.deserialize(inFile);

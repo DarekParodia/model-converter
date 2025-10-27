@@ -11,40 +11,40 @@ Model<T>::~Model() {
 }
 
 template <typename T>
-types::model<T> *Model<T>::parseJsonStatic(std::ifstream &file) {
+AI::model_data_t<T> *Model<T>::parseJsonStatic(std::ifstream &file) {
     logger->info("Parsing json");
     if(!file)
         throw std::ios_base::failure("Failed to open file");
 
-    json             json_data = json::parse(file);
+    json                 json_data = json::parse(file);
 
-    types::model<T> *model     = new types::model<T>;
-    model->layer_count         = json_data["layers"].size();
+    AI::model_data_t<T> *model     = new AI::model_data_t<T>;
+    model->layer_count             = json_data["layers"].size();
     logger->debug("Layer count: " + std::to_string(model->layer_count));
 
-    model->layers = new types::layer<T>[model->layer_count];
+    model->layers = new AI::layer_t<T>[model->layer_count];
     for(int i = 0; i < model->layer_count; i++) {
-        types::layer<T> layer;
-        layer.weights.size = json_data["layers"][i]["weights"].size();
-        layer.biases.size  = json_data["layers"][i]["biases"].size();
-        logger->debug(std::format("Layer[{}] Weigths: {}, Biases: {}", i, layer.weights.size, layer.biases.size));
+        AI::layer_t<T> layer_t;
+        layer_t.weights.size = json_data["layers"][i]["weights"].size();
+        layer_t.biases.size  = json_data["layers"][i]["biases"].size();
+        logger->debug(std::format("Layer[{}] Weigths: {}, Biases: {}", i, layer_t.weights.size, layer_t.biases.size));
 
         // weights
-        layer.weights.array = new types::array_1d<T>[layer.weights.size];
-        for(int j = 0; j < layer.weights.size; j++) {
-            types::array_1d<T> weight;
+        layer_t.weights.array = new AI::array_1d<T>[layer_t.weights.size];
+        for(int j = 0; j < layer_t.weights.size; j++) {
+            AI::array_1d<T> weight;
             weight.size  = json_data["layers"][i]["weights"][j].size();
             weight.array = new T[weight.size];
             for(int k = 0; k < weight.size; k++)
                 weight.array[k] = getValueFromJson(json_data["layers"][i]["weights"][j][k]);
-            layer.weights.array[j] = weight;
+            layer_t.weights.array[j] = weight;
         }
 
         // biases
-        layer.biases.array = new T[layer.biases.size];
-        for(int j = 0; j < layer.biases.size; j++)
-            layer.biases.array[j] = getValueFromJson(json_data["layers"][i]["biases"][j]);
-        model->layers[i] = layer;
+        layer_t.biases.array = new T[layer_t.biases.size];
+        for(int j = 0; j < layer_t.biases.size; j++)
+            layer_t.biases.array[j] = getValueFromJson(json_data["layers"][i]["biases"][j]);
+        model->layers[i] = layer_t;
     }
 
     return model;
@@ -57,7 +57,7 @@ void Model<T>::parseJson(std::ifstream &file) {
 };
 
 template <typename T>
-types::model<T> *Model<T>::getModel() {
+AI::model_data_t<T> *Model<T>::getModel() {
     return this->model;
 }
 template <typename T>
